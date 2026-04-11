@@ -1,6 +1,9 @@
 import "./App.css";
+import { Routes, Route } from "react-router-dom";
+import LoginPage from "./features/auth/pages/LoginPage";
+import RegisterPage from "./features/auth/pages/RegisterPage";
 
-function App() {
+function LandingPage() {
   return (
       <div className="app-container">
         <header className="hero-section">
@@ -45,6 +48,16 @@ function App() {
           <p>© 2026 Team 38 – Intelligent Agriculture System</p>
         </footer>
       </div>
+  );
+}
+
+function App() {
+  return (
+    <Routes>
+      <Route path="/" element={<LandingPage />} />
+      <Route path="/auth/login" element={<LoginPage />} />
+      <Route path="/auth/register" element={<RegisterPage />} />
+    </Routes>
   );
 }
 
