@@ -1,7 +1,12 @@
 python-dotenv
-pandas
-numpy
 fastapi
-uvicorn
+uvicorn[standard]
 python-multipart
-# -e .
+pydantic>=2
+numpy
+pandas
+joblib
+scikit-learn>=1.6.1,<1.7
+scipy>=1.6.0
+xgboost>=2.0.0
+lightgbm>=4.0.0
