@@ -1,0 +1,7 @@
+python-dotenv
+pandas
+numpy
+fastapi
+uvicorn
+python-multipart
+# -e .
