@@ -4,8 +4,14 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Parcel {
 
     @Id
@@ -15,41 +21,4 @@ public class Parcel {
     private String location;
     private Double size;
     private String soilType;
-
-    public Parcel() {
-    }
-
-    public Parcel(String location, Double size, String soilType) {
-        this.location = location;
-        this.size = size;
-        this.soilType = soilType;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getLocation() {
-        return location;
-    }
-
-    public void setLocation(String location) {
-        this.location = location;
-    }
-
-    public Double getSize() {
-        return size;
-    }
-
-    public void setSize(Double size) {
-        this.size = size;
-    }
-
-    public String getSoilType() {
-        return soilType;
-    }
-
-    public void setSoilType(String soilType) {
-        this.soilType = soilType;
-    }
 }
