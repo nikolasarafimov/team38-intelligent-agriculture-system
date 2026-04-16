@@ -4,6 +4,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
+import mk.ukim.team38.backend.model.User;
 
 @Entity
 public class Parcel {
@@ -15,6 +17,9 @@ public class Parcel {
     private String location;
     private Double size;
     private String soilType;
+
+    @ManyToOne
+    private User user;
 
     public Parcel() {
     }
@@ -51,5 +56,13 @@ public class Parcel {
 
     public void setSoilType(String soilType) {
         this.soilType = soilType;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }

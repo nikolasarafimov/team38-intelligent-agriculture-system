@@ -8,38 +8,46 @@ import jakarta.persistence.ManyToOne;
 import mk.ukim.team38.backend.model.User;
 
 @Entity
-public class Crop {
+public class Activity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String name;
+    private String description;
+    private String date;
     private String type;
-    private String plantingDate;
 
     @ManyToOne
     private User user;
 
-    public Crop() {
+    public Activity() {
     }
 
-    public Crop(String name, String type, String plantingDate) {
-        this.name = name;
+    public Activity(String description, String date, String type) {
+        this.description = description;
+        this.date = date;
         this.type = type;
-        this.plantingDate = plantingDate;
     }
 
     public Long getId() {
         return id;
     }
 
-    public String getName() {
-        return name;
+    public String getDescription() {
+        return description;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
     }
 
     public String getType() {
@@ -48,14 +56,6 @@ public class Crop {
 
     public void setType(String type) {
         this.type = type;
-    }
-
-    public String getPlantingDate() {
-        return plantingDate;
-    }
-
-    public void setPlantingDate(String plantingDate) {
-        this.plantingDate = plantingDate;
     }
 
     public User getUser() {
