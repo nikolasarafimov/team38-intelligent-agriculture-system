@@ -34,7 +34,6 @@ public class ExportService {
         this.userRepository = userRepository;
     }
 
-    // CSV Export for Crops
     public String exportCropsCsv(User user) {
         List<Crop> crops = cropRepository.findByUser(user);
         StringBuilder sb = new StringBuilder();
@@ -49,7 +48,6 @@ public class ExportService {
         return sb.toString();
     }
 
-    // CSV Export for Parcels
     public String exportParcelsCsv(User user) {
         List<Parcel> parcels = parcelRepository.findByUser(user);
         StringBuilder sb = new StringBuilder();
@@ -64,7 +62,6 @@ public class ExportService {
         return sb.toString();
     }
 
-    // CSV Export for Activities
     public String exportActivitiesCsv(User user) {
         List<Activity> activities = activityRepository.findByUser(user);
         StringBuilder sb = new StringBuilder();
@@ -79,11 +76,9 @@ public class ExportService {
         return sb.toString();
     }
 
-    // Excel Export for All
     public byte[] exportAllToExcel(User user) throws IOException {
         Workbook workbook = new XSSFWorkbook();
 
-        // Sheet 1: Crops
         Sheet cropsSheet = workbook.createSheet("Crops");
         Row cropsHeader = cropsSheet.createRow(0);
         String[] cropsColumns = {"ID", "Name", "Type", "Planting Date"};
@@ -100,7 +95,6 @@ public class ExportService {
             row.createCell(3).setCellValue(c.getPlantingDate());
         }
 
-        // Sheet 2: Parcels
         Sheet parcelsSheet = workbook.createSheet("Parcels");
         Row parcelsHeader = parcelsSheet.createRow(0);
         String[] parcelsColumns = {"ID", "Location", "Size", "Soil Type"};
@@ -117,7 +111,6 @@ public class ExportService {
             row.createCell(3).setCellValue(p.getSoilType());
         }
 
-        // Sheet 3: Activities
         Sheet activitiesSheet = workbook.createSheet("Activities");
         Row activitiesHeader = activitiesSheet.createRow(0);
         String[] activitiesColumns = {"ID", "Description", "Date", "Type"};
