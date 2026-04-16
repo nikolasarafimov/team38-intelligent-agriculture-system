@@ -2,8 +2,6 @@
 
 ## Project: Intelligent System for Analysis and Recommendations in Agriculture
 ## Team: 38
-## Version: 1.0
-## Date: 16.04.2026
 
 ---
 
