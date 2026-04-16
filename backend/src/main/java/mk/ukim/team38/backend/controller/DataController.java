@@ -25,7 +25,6 @@ public class DataController {
     @Autowired
     private UserRepository userRepository;
 
-    // Export Crops to CSV
     @GetMapping("/export/crops")
     public ResponseEntity<byte[]> exportCrops(@RequestParam Long userId) throws IOException {
         User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
@@ -36,7 +35,6 @@ public class DataController {
         return ResponseEntity.ok().headers(headers).body(csv.getBytes());
     }
 
-    // Import Crops from CSV
     @PostMapping("/import/crops")
     public ResponseEntity<Map<String, Object>> importCrops(@RequestParam("file") MultipartFile file, @RequestParam Long userId) throws IOException {
         User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
@@ -55,7 +53,6 @@ public class DataController {
         return ResponseEntity.ok().headers(headers).body(csv.getBytes());
     }
 
-    // Import Parcels from CSV
     @PostMapping("/import/parcels")
     public ResponseEntity<Map<String, Object>> importParcels(@RequestParam("file") MultipartFile file, @RequestParam Long userId) throws IOException {
         User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
@@ -63,7 +60,6 @@ public class DataController {
         return ResponseEntity.ok(result);
     }
 
-    // Export Activities to CSV
     @GetMapping("/export/activities")
     public ResponseEntity<byte[]> exportActivities(@RequestParam Long userId) throws IOException {
         User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
@@ -74,7 +70,6 @@ public class DataController {
         return ResponseEntity.ok().headers(headers).body(csv.getBytes());
     }
 
-    // Import Activities from CSV
     @PostMapping("/import/activities")
     public ResponseEntity<Map<String, Object>> importActivities(@RequestParam("file") MultipartFile file, @RequestParam Long userId) throws IOException {
         User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
@@ -82,7 +77,6 @@ public class DataController {
         return ResponseEntity.ok(result);
     }
 
-    // Export All to Excel
     @GetMapping("/export/excel")
     public ResponseEntity<byte[]> exportAllExcel(@RequestParam Long userId) throws IOException {
         User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
@@ -93,7 +87,6 @@ public class DataController {
         return ResponseEntity.ok().headers(headers).body(excelData);
     }
 
-    // Import from Excel
     @PostMapping("/import/excel")
     public ResponseEntity<Map<String, Object>> importExcel(@RequestParam("file") MultipartFile file, @RequestParam Long userId) throws IOException {
         User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
