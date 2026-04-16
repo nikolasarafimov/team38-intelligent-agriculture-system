@@ -34,7 +34,6 @@ public class ImportService {
         this.userRepository = userRepository;
     }
 
-    // CSV Import for Crops
     public Map<String, Object> importCropsCsv(MultipartFile file, User user) throws IOException {
         int imported = 0, skipped = 0;
         List<String> errors = new ArrayList<>();
@@ -72,7 +71,6 @@ public class ImportService {
         return Map.of("imported", imported, "skipped", skipped, "errors", errors);
     }
 
-    // CSV Import for Parcels
     public Map<String, Object> importParcelsCsv(MultipartFile file, User user) throws IOException {
         int imported = 0, skipped = 0;
         List<String> errors = new ArrayList<>();
@@ -110,7 +108,6 @@ public class ImportService {
         return Map.of("imported", imported, "skipped", skipped, "errors", errors);
     }
 
-    // CSV Import for Activities
     public Map<String, Object> importActivitiesCsv(MultipartFile file, User user) throws IOException {
         int imported = 0, skipped = 0;
         List<String> errors = new ArrayList<>();
@@ -148,14 +145,12 @@ public class ImportService {
         return Map.of("imported", imported, "skipped", skipped, "errors", errors);
     }
 
-    // Excel Import for All
     public Map<String, Object> importFromExcel(MultipartFile file, User user) throws IOException {
         int imported = 0, skipped = 0;
         List<String> errors = new ArrayList<>();
 
         Workbook workbook = new XSSFWorkbook(file.getInputStream());
 
-        // Sheet 0: Crops
         Sheet cropsSheet = workbook.getSheet("Crops");
         if (cropsSheet != null) {
             for (int i = 1; i <= cropsSheet.getLastRowNum(); i++) {
@@ -176,7 +171,6 @@ public class ImportService {
             }
         }
 
-        // Sheet 1: Parcels
         Sheet parcelsSheet = workbook.getSheet("Parcels");
         if (parcelsSheet != null) {
             for (int i = 1; i <= parcelsSheet.getLastRowNum(); i++) {
@@ -198,7 +192,6 @@ public class ImportService {
             }
         }
 
-        // Sheet 2: Activities
         Sheet activitiesSheet = workbook.getSheet("Activities");
         if (activitiesSheet != null) {
             for (int i = 1; i <= activitiesSheet.getLastRowNum(); i++) {
