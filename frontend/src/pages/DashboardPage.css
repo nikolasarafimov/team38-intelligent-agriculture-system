@@ -1,0 +1,138 @@
+.dashboard {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.section-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #5f5e5a;
+    margin-bottom: 10px;
+}
+
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 10px;
+}
+
+.metric-card {
+    background: #f1efe8;
+    border-radius: 8px;
+    padding: 0.85rem 1rem;
+}
+
+.metric-label {
+    font-size: 12px;
+    color: #5f5e5a;
+    margin-bottom: 5px;
+}
+
+.metric-value {
+    font-size: 22px;
+    font-weight: 500;
+    color: #2c2c2a;
+}
+
+.metric-unit {
+    font-size: 12px;
+    color: #888780;
+    margin-left: 2px;
+}
+
+.metric-bar {
+    height: 4px;
+    border-radius: 2px;
+    margin-top: 8px;
+    background: #d3d1c7;
+}
+
+.metric-fill {
+    height: 4px;
+    border-radius: 2px;
+}
+
+.cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 12px;
+}
+
+.card {
+    background: #ffffff;
+    border: 0.5px solid #d3d1c7;
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
+}
+
+.card h4 {
+    font-size: 14px;
+    font-weight: 500;
+    color: #2c2c2a;
+    margin-bottom: 12px;
+    padding-bottom: 10px;
+    border-bottom: 0.5px solid #d3d1c7;
+}
+
+.row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 7px 0;
+    border-bottom: 0.5px solid #f1efe8;
+    font-size: 13px;
+}
+
+.row:last-child {
+    border-bottom: none;
+}
+
+.row span:first-child {
+    color: #5f5e5a;
+}
+
+.row span:last-child {
+    font-weight: 500;
+    color: #2c2c2a;
+}
+
+.gauge {
+    width: 140px;
+    margin: auto;
+}
+
+.gauge-body {
+    width: 100%;
+    padding-bottom: 50%;
+    background: #eee;
+    border-radius: 140px 140px 0 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.gauge-fill {
+    position: absolute;
+    top: 100%;
+    width: 100%;
+    height: 100%;
+    transform-origin: center top;
+    transition: transform 0.6s ease;
+}
+
+.gauge-cover {
+    position: absolute;
+    top: 25%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 70%;
+    height: 120%;
+    background: white;
+    border-radius: 48%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
