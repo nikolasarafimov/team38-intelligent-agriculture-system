@@ -99,28 +99,35 @@ function MetricCard({
 function getIrrigationRecommendations(d) {
     if (d.soil_Moisture < 40)
     {
-        return "Итно е потребно наводнување"
+        return "* Итно е потребно наводнување"
     }
     if (d.soil_Moisture < 60 && d.temperature_C > 25)
     {
-        return "Препорачано е умерено наводнување"
+        return "* Препорачано е умерено наводнување"
     }
     if (d.rainfall_mm > 15)
     {
-        return "Има доволно врнежи, не е потребно наводнување"
+        return "* Има доволно врнежи, не е потребно наводнување"
     }
-    return "Нема потреба од наводнување"
+    return "* Нема потреба од наводнување"
 }
 
 function computedScores(d){
     const waterBalance =
-        d.soil_Moisture * 0.5 +
-        d.rainfall_mm * 2 -
-        d.temperature_C * 1.2 -
-        d.wind_Speed_kmh * 0.5;
+        (d.soil_Moisture * 0.5 +
+            d.rainfall_mm * 2 -
+            d.temperature_C * 1.2 -
+            d.wind_Speed_kmh * 0.5) / 100 * 100;
+
+    const soilQuality =
+        (100 -
+            Math.abs(6.5 - d.soil_pH) * 20 +
+            d.organic_Carbon * 40 -
+            d.electrical_Conductivity * 15);
 
     return {
-        waterBalance
+        waterBalance: Math.max(0, Math.min(100, waterBalance)),
+        soilQuality: Math.max(0, Math.min(100, soilQuality))
     };
 
 }
@@ -130,13 +137,12 @@ export default function Dashboard() {
     const scores = computedScores(d);
     return (
         <div className="dashboard">
-
             <section>
                 <h3 className="section-label">Агрегатни индикатори</h3>
                 <div className="metrics-grid">
 
                     <MetricCard
-                        label="🌱 Water Balance"
+                        label="Water Balance"
                         value={scores.waterBalance.toFixed(1)}
                         unit="%"
                         fillPercent={scores.waterBalance}
@@ -144,7 +150,14 @@ export default function Dashboard() {
                         type="gauge"
                     />
 
-
+                    <MetricCard
+                        label="Soil Quality"
+                        value={scores.soilQuality.toFixed(1)}
+                        unit="%"
+                        fillPercent={scores.soilQuality}
+                        color="#639922"
+                        type="gauge"
+                    />
 
                 </div>
             </section>
@@ -160,9 +173,6 @@ export default function Dashboard() {
                     <MetricCard label="Ел. спроводливост"   value={d.electrical_Conductivity} unit=" dS/m" fillPercent={d.electrical_Conductivity * 20} color="#378ADD" />
                 </div>
 
-                <div className="recommendation">
-                    {getIrrigationRecommendations(d)}
-                </div>
             </section>
 
             <section>
@@ -174,6 +184,10 @@ export default function Dashboard() {
                     <MetricCard label="Брзина на ветер"     value={d.wind_Speed_kmh} unit=" km/h" fillPercent={d.wind_Speed_kmh / 50 * 100} color="#888780" />
                 </div>
             </section>
+
+            <div className="recommendation">
+                {getIrrigationRecommendations(d)}
+            </div>
 
             <section>
                 <h3 className="section-label">Култура и парцела</h3>
