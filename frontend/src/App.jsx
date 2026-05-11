@@ -1,76 +1,89 @@
 import "./App.css";
-import { Routes, Route, Link } from "react-router-dom";
+import { NavLink, Routes, Route } from "react-router-dom";
 
 import DashboardPage from "./pages/DashboardPage";
 import HomePage from "./pages/HomePage";
 import CropForm from "./pages/CropFormPage.jsx";
 import Recommendations from "./pages/RecommendationsPage.jsx";
+import ImportExportPage from "./pages/ImportExportPage.jsx";
 
 import LoginPage from "./features/auth/pages/LoginPage";
 import RegisterPage from "./features/auth/pages/RegisterPage";
 
 function LandingPage() {
   return (
-      <>
-        <nav className="navbar navbar-expand-lg navbar-light bg-light">
-          <button
-              className="navbar-toggler"
-              type="button"
-              data-bs-toggle="collapse"
-              data-bs-target="#nav"
-          >
-            <span className="navbar-toggler-icon"></span>
-          </button>
-
-          <div className="collapse navbar-collapse" id="nav">
-            <div className="navbar-nav">
-              <Link className="nav-link" to="/">
-                Home
-              </Link>
-              <Link className="nav-link" to="/dashboard">
-                Dashboard
-              </Link>
-              <Link className="nav-link" to="/recommendations">
-                Recommendations
-              </Link>
-              <Link className="nav-link" to="/cropform">
-                Add Crop
-              </Link>
+      <div className="app-container">
+        <nav className="app-navbar">
+          <div className="navbar-brand">
+            <span className="brand-icon">🌱</span>
+            <div>
+              <h1>AgriSense AI</h1>
+              <p>Team 38 Intelligent Agriculture System</p>
             </div>
           </div>
 
-          <div className="navbar-nav ms-auto">
-            <Link className="nav-link" to="/auth/login">
+          <div className="navbar-links">
+            <NavLink to="/" end>
+              Home
+            </NavLink>
+            <NavLink to="/dashboard">
+              Dashboard
+            </NavLink>
+            <NavLink to="/cropform">
+              Add Crop
+            </NavLink>
+            <NavLink to="/recommendations">
+              Recommendations
+            </NavLink>
+            <NavLink to="/import-export">
+              Import / Export
+            </NavLink>
+          </div>
+
+          <div className="navbar-auth">
+            <NavLink to="/auth/login" className="auth-link">
               Login
-            </Link>
-            <Link className="nav-link" to="/auth/register">
+            </NavLink>
+            <NavLink to="/auth/register" className="auth-button">
               Register
-            </Link>
+            </NavLink>
           </div>
         </nav>
 
-        <div className="app-container">
-          <header className="hero-section">
-            <h1>Intelligent Agriculture System</h1>
-            <p className="subtitle">
-              Team 38 project for agricultural data analysis and AI-based recommendations.
+        <header className="hero-section">
+          <div className="hero-content">
+            <span className="hero-badge">AI in Agriculture · Team 38</span>
+            <h2>Intelligent Agriculture System</h2>
+            <p>
+              A web-based platform for managing agricultural data, analyzing soil and crop
+              conditions, importing/exporting records, and generating AI-supported
+              recommendations.
             </p>
-          </header>
+            <div className="hero-actions">
+              <NavLink to="/dashboard" className="primary-action">
+                View Dashboard
+              </NavLink>
+              <NavLink to="/cropform" className="secondary-action">
+                Add Crop Data
+              </NavLink>
+            </div>
+          </div>
+        </header>
 
-          <main className="content-section">
-            <Routes>
-              <Route path="/" element={<HomePage />} />
-              <Route path="/dashboard" element={<DashboardPage />} />
-              <Route path="/cropform" element={<CropForm />} />
-              <Route path="/recommendations" element={<Recommendations />} />
-            </Routes>
-          </main>
+        <main className="content-section">
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/dashboard" element={<DashboardPage />} />
+            <Route path="/cropform" element={<CropForm />} />
+            <Route path="/recommendations" element={<Recommendations />} />
+            <Route path="/import-export" element={<ImportExportPage />} />
+          </Routes>
+        </main>
 
-          <footer className="footer">
-            <p>© 2026 Team 38 – Intelligent Agriculture System</p>
-          </footer>
-        </div>
-      </>
+        <footer className="footer">
+          <p>© 2026 Team 38 – Intelligent Agriculture System</p>
+        </footer>
+      </div>
   );
 }
 

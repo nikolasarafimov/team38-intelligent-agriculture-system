@@ -1,15 +1,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Russo+One&display=swap');
-* {
+.dashboard {
     font-family: "Russo One", sans-serif;
     font-weight: 400;
     font-style: normal;
-}
-
-.dashboard {
-    padding: 1.5rem;
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
 }
 
 .section-label {
@@ -142,4 +135,32 @@
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+.filter-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    background: #ffffff;
+    border: 0.5px solid #d3d1c7;
+    border-radius: 12px;
+    padding: 1rem;
+}
+
+.filter-select {
+    min-width: 160px;
+    border: 1px solid #d3d1c7;
+    border-radius: 10px;
+    padding: 0.7rem 0.85rem;
+    background: #f8faf6;
+    color: #2c2c2a;
+}
+
+.recommendation {
+    border-radius: 14px;
+    padding: 1.1rem 1.25rem;
+    background: #e8f5ed;
+    border-left: 6px solid #1d9e75;
+    color: #1d5e45;
+    font-size: 1rem;
 }
