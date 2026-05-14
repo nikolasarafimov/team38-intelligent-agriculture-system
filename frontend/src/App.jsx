@@ -15,7 +15,7 @@ function LandingPage() {
       <div className="app-container">
         <nav className="app-navbar">
           <div className="navbar-brand">
-            <span className="brand-icon">🌱</span>
+            <img src="/agriculture-icon.png" alt="AgriSense AI logo" className="brand-logo"/>
             <div>
               <h1>AgriSense AI</h1>
               <p>Team 38 Intelligent Agriculture System</p>

@@ -9,16 +9,18 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(DataController.class)
@@ -38,29 +40,45 @@ class DataControllerTest {
 
     @Test
     void testExportCrops() throws Exception {
-        User user = new User("John", "john@example.com", "pass");
-        user.setId(1L);
-        when(userRepository.findById(1L)).thenReturn(java.util.Optional.of(user));
-        when(exportService.exportCropsCsv(user)).thenReturn("id,name,type,plantingDate\n1,Wheat,Grain,2024-01-01\n");
+        User user = new User(1L, "John", "john@example.com", "pass");
+
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(exportService.exportCropsCsv(user))
+                .thenReturn("id,name,type,plantingDate\n1,Wheat,Grain,2024-01-01\n");
 
         mockMvc.perform(get("/api/data/export/crops").param("userId", "1"))
                 .andExpect(status().isOk())
                 .andExpect(header().string("Content-Disposition", "attachment; filename=crops.csv"))
-                .andExpect(content().contentType(MediaType.TEXT_PLAIN));
+                .andExpect(header().string("Content-Type", "text/csv;charset=UTF-8"))
+                .andExpect(content().string("id,name,type,plantingDate\n1,Wheat,Grain,2024-01-01\n"));
     }
 
     @Test
     void testImportCrops() throws Exception {
-        User user = new User("John", "john@example.com", "pass");
-        user.setId(1L);
-        when(userRepository.findById(1L)).thenReturn(java.util.Optional.of(user));
-        Map<String, Object> result = Map.of("imported", 1, "skipped", 0, "errors", java.util.List.of());
+        User user = new User(1L, "John", "john@example.com", "pass");
+
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+
+        Map<String, Object> result = Map.of(
+                "imported", 1,
+                "skipped", 0,
+                "errors", List.of()
+        );
+
         when(importService.importCropsCsv(any(), eq(user))).thenReturn(result);
 
-        MockMultipartFile file = new MockMultipartFile("file", "crops.csv", "text/csv", "name,type\nCorn,Vegetable\n".getBytes());
+        MockMultipartFile file = new MockMultipartFile(
+                "file",
+                "crops.csv",
+                "text/csv",
+                "id,name,type,plantingDate\n1,Corn,Vegetable,2024-04-01\n".getBytes()
+        );
 
-        mockMvc.perform(multipart("/api/data/import/crops").file(file).param("userId", "1"))
+        mockMvc.perform(multipart("/api/data/import/crops")
+                        .file(file)
+                        .param("userId", "1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.imported").value(1));
+                .andExpect(jsonPath("$.imported").value(1))
+                .andExpect(jsonPath("$.skipped").value(0));
     }
 }

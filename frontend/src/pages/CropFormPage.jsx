@@ -1,6 +1,5 @@
 import { useState } from "react";
-
-const API_BASE_URL = "http://localhost:8080";
+import { API_BASE_URL, DEMO_USER_ID } from "../api";
 
 export default function CropForm() {
     const [formData, setFormData] = useState({
@@ -16,8 +15,6 @@ export default function CropForm() {
     });
 
     const [createdCrop, setCreatedCrop] = useState(null);
-
-    const USER_ID = 1;
 
     const handleChange = (event) => {
         const { name, value } = event.target;
@@ -58,7 +55,7 @@ export default function CropForm() {
             type: formData.type,
             plantingDate: formData.plantingDate,
             user: {
-                id: USER_ID,
+                id: DEMO_USER_ID,
             },
         };
 
@@ -88,7 +85,7 @@ export default function CropForm() {
             setStatus({
                 loading: false,
                 message:
-                    "Could not save crop data. Make sure the backend is running and user with ID 1 exists.",
+                    `Could not save crop data. Make sure the backend is running and user with ID ${DEMO_USER_ID} exists.`,
                 type: "error",
             });
             console.error(error);

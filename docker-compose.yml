@@ -1,0 +1,69 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: team38-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: agriculture_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - team38_postgres_data:/var/lib/postgresql/data
+    networks:
+      - team38-network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: team38-backend
+    restart: unless-stopped
+    depends_on:
+      - postgres
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/agriculture_db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+    ports:
+      - "8080:8080"
+    networks:
+      - team38-network
+
+  ml:
+    build:
+      context: ./ml
+      dockerfile: Dockerfile
+    container_name: team38-ml
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    networks:
+      - team38-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_BASE_URL: http://localhost:8080
+        VITE_ML_API_BASE_URL: http://localhost:8000
+        VITE_DEMO_USER_ID: 1
+    container_name: team38-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+      - ml
+    ports:
+      - "5173:80"
+    networks:
+      - team38-network
+
+volumes:
+  team38_postgres_data:
+
+networks:
+  team38-network:
+    driver: bridge

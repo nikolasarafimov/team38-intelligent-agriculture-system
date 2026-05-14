@@ -61,14 +61,10 @@ select {
   min-width: 250px;
 }
 
-.brand-icon {
-  width: 2.6rem;
-  height: 2.6rem;
-  display: grid;
-  place-items: center;
-  border-radius: 0.9rem;
-  background: linear-gradient(135deg, var(--primary), #56b77a);
-  box-shadow: 0 10px 24px rgba(31, 122, 77, 0.25);
+.brand-logo {
+  width: 38px;
+  height: 38px;
+  object-fit: contain;
 }
 
 .navbar-brand h1 {
@@ -197,6 +193,27 @@ select {
   color: white;
   border: 1px solid rgba(255, 255, 255, 0.55);
   background: rgba(255, 255, 255, 0.12);
+}
+
+.secondary-button {
+  margin-top: 0.75rem;
+  width: 100%;
+  padding: 0.85rem 1rem;
+  border: 1px solid #86efac;
+  border-radius: 12px;
+  background: transparent;
+  color: #166534;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.secondary-button:hover {
+  background: #dcfce7;
+}
+
+.secondary-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .content-section {

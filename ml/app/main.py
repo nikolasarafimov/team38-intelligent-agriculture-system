@@ -11,6 +11,7 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from pydantic import ValidationError
+from fastapi.middleware.cors import CORSMiddleware
 
 from app.feature_engineering import add_engineered_features
 from app.model_loader import Artifacts, get_artifacts, load_artifacts_into_memory
@@ -37,6 +38,13 @@ async def lifespan(_app: FastAPI):
 
 app = FastAPI(title="Irrigation prediction API", lifespan=lifespan)
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.exception_handler(RequestValidationError)
 async def request_validation_handler(

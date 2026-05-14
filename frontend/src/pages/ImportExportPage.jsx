@@ -1,7 +1,5 @@
 import { useState } from "react";
-
-const API_BASE_URL = "http://localhost:8080";
-const USER_ID = 1;
+import { API_BASE_URL, DEMO_USER_ID } from "../api";
 
 const importOptions = [
     { value: "crops", label: "Crops CSV" },
@@ -65,7 +63,7 @@ export default function ImportExportPage() {
 
         try {
             const response = await fetch(
-                `${API_BASE_URL}/api/data/import/${importType}?userId=${USER_ID}`,
+                `${API_BASE_URL}/api/data/import/${importType}?userId=${DEMO_USER_ID}`,
                 {
                     method: "POST",
                     body: formData,
@@ -92,7 +90,7 @@ export default function ImportExportPage() {
 
         try {
             const response = await fetch(
-                `${API_BASE_URL}/api/data/export/${endpoint}?userId=${USER_ID}`
+                `${API_BASE_URL}/api/data/export/${endpoint}?userId=${DEMO_USER_ID}`
             );
 
             if (!response.ok) {
