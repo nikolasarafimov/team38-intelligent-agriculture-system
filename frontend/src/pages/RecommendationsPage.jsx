@@ -190,7 +190,6 @@ export default function Recommendations() {
     return (
         <div className="recommendations-page">
             <section className="card">
-                <span className="section-pill">AI Recommendation Module</span>
                 <h2>Agricultural Recommendations</h2>
                 <p>
                     This page demonstrates the intelligent recommendation part of the system.

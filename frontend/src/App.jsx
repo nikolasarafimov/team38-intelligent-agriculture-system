@@ -1,5 +1,6 @@
+import { useState } from "react";
 import "./App.css";
-import { NavLink, Routes, Route } from "react-router-dom";
+import { NavLink, Routes, Route, useLocation } from "react-router-dom";
 
 import DashboardPage from "./pages/DashboardPage";
 import HomePage from "./pages/HomePage";
@@ -11,64 +12,103 @@ import LoginPage from "./features/auth/pages/LoginPage";
 import RegisterPage from "./features/auth/pages/RegisterPage";
 
 function LandingPage() {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const location = useLocation();
+  const showHero = location.pathname === "/";
+
+  const closeMenu = () => {
+    setMenuOpen(false);
+  };
+
   return (
       <div className="app-container">
         <nav className="app-navbar">
-          <div className="navbar-brand">
-            <img src="/agriculture-icon.png" alt="AgriSense AI logo" className="brand-logo"/>
+          <NavLink to="/" className="navbar-brand" onClick={closeMenu}>
+            <img
+                src="/agriculture-icon.png"
+                alt="AgriSense AI logo"
+                className="brand-logo"
+            />
             <div>
               <h1>AgriSense AI</h1>
-              <p>Team 38 Intelligent Agriculture System</p>
+              <p>Intelligent Agriculture System</p>
             </div>
-          </div>
+          </NavLink>
 
-          <div className="navbar-links">
-            <NavLink to="/" end>
-              Home
-            </NavLink>
-            <NavLink to="/dashboard">
-              Dashboard
-            </NavLink>
-            <NavLink to="/cropform">
-              Add Crop
-            </NavLink>
-            <NavLink to="/recommendations">
-              Recommendations
-            </NavLink>
-            <NavLink to="/import-export">
-              Import / Export
-            </NavLink>
-          </div>
+          <button
+              className={`mobile-menu-toggle ${menuOpen ? "open" : ""}`}
+              type="button"
+              onClick={() => setMenuOpen((previous) => !previous)}
+              aria-label="Toggle navigation menu"
+              aria-expanded={menuOpen}
+          >
+            <span></span>
+            <span></span>
+            <span></span>
+          </button>
 
-          <div className="navbar-auth">
-            <NavLink to="/auth/login" className="auth-link">
-              Login
-            </NavLink>
-            <NavLink to="/auth/register" className="auth-button">
-              Register
-            </NavLink>
+          <div className={`navbar-menu ${menuOpen ? "open" : ""}`}>
+            <div className="navbar-links">
+              <NavLink to="/" end onClick={closeMenu}>
+                Home
+              </NavLink>
+
+              <NavLink to="/dashboard" onClick={closeMenu}>
+                Dashboard
+              </NavLink>
+
+              <NavLink to="/cropform" onClick={closeMenu}>
+                Add Crop
+              </NavLink>
+
+              <NavLink to="/recommendations" onClick={closeMenu}>
+                Recommendations
+              </NavLink>
+
+              <NavLink to="/import-export" onClick={closeMenu}>
+                Import / Export
+              </NavLink>
+            </div>
+
+            <div className="navbar-auth">
+              <NavLink to="/auth/login" className="auth-link" onClick={closeMenu}>
+                Login
+              </NavLink>
+
+              <NavLink
+                  to="/auth/register"
+                  className="auth-button"
+                  onClick={closeMenu}
+              >
+                Register
+              </NavLink>
+            </div>
           </div>
         </nav>
 
-        <header className="hero-section">
-          <div className="hero-content">
-            <span className="hero-badge">AI in Agriculture · Team 38</span>
-            <h2>Intelligent Agriculture System</h2>
-            <p>
-              A web-based platform for managing agricultural data, analyzing soil and crop
-              conditions, importing/exporting records, and generating AI-supported
-              recommendations.
-            </p>
-            <div className="hero-actions">
-              <NavLink to="/dashboard" className="primary-action">
-                View Dashboard
-              </NavLink>
-              <NavLink to="/cropform" className="secondary-action">
-                Add Crop Data
-              </NavLink>
-            </div>
-          </div>
-        </header>
+        {showHero && (
+            <header className="hero-section">
+              <div className="hero-content">
+                <span className="hero-badge">AI in Agriculture · Team 38</span>
+                <h2>Intelligent Agriculture System</h2>
+                <p>
+                  A web-based platform for managing agricultural data, analyzing soil
+                  and crop conditions, importing/exporting records, and generating
+                  AI-supported irrigation recommendations.
+                </p>
+
+                <div className="hero-actions">
+                  <NavLink to="/dashboard" className="primary-action">
+                    View Dashboard
+                  </NavLink>
+
+                  <NavLink to="/cropform" className="secondary-action">
+                    Add Crop Data
+                  </NavLink>
+                </div>
+              </div>
+            </header>
+        )}
 
         <main className="content-section">
           <Routes>
@@ -81,7 +121,7 @@ function LandingPage() {
         </main>
 
         <footer className="footer">
-          <p>© 2026 Team 38 – Intelligent Agriculture System</p>
+          <p>© 2026 – Intelligent Agriculture System</p>
         </footer>
       </div>
   );

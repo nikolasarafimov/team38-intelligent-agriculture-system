@@ -96,7 +96,6 @@ export default function CropForm() {
         <div className="form-page">
             <section className="card form-intro">
                 <div>
-                    <span className="section-pill">Crop Data Entry</span>
                     <h2>Add New Crop</h2>
                     <p>
                         Enter crop information and store it in the PostgreSQL database through the

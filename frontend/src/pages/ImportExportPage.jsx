@@ -118,7 +118,6 @@ export default function ImportExportPage() {
     return (
         <div className="import-export-page">
             <section className="card">
-                <span className="section-pill">CSV / Excel Data Portability</span>
                 <h2>Import & Export Data</h2>
                 <p>
                     This module allows users to export agricultural records to CSV or Excel and

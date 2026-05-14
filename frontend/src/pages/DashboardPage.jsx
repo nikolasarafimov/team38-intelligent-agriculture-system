@@ -42,10 +42,10 @@ function MetricCard({ label, value, unit, fillPercent, color, type = "bar" }) {
 }
 
 function getIrrigationRecommendations(d) {
-    if (d.soil_Moisture < 40) return "* Итно е потребно наводнување";
-    if (d.soil_Moisture < 60 && d.temperature_C > 25) return "* Препорачано е умерено наводнување";
-    if (d.rainfall_mm > 15) return "* Има доволно врнежи, не е потребно наводнување";
-    return "* Нема потреба од наводнување";
+    if (d.soil_Moisture < 40) return "* Urgent irrigation is required";
+    if (d.soil_Moisture < 60 && d.temperature_C > 25) return "* Moderate irrigation is recommended";
+    if (d.rainfall_mm > 15) return "* Rainfall is sufficient, irrigation is not required";
+    return "* Irrigation is currently not required";
 }
 
 function computedScores(d) {
@@ -96,11 +96,11 @@ function toD(obj) {
 }
 
 const FILTER_FIELDS = [
-    { key: "Crop_Type",        label: "Култура" },
-    { key: "Soil_Type",        label: "Тип на почва" },
-    { key: "Season",           label: "Сезона" },
-    { key: "Region",           label: "Регион" },
-    { key: "Irrigation_Type",  label: "Наводнување" },
+    { key: "Crop_Type",        label: "Crop" },
+    { key: "Soil_Type",        label: "Soil Type" },
+    { key: "Season",           label: "Season" },
+    { key: "Region",           label: "Region" },
+    { key: "Irrigation_Type",  label: "Irrigation" },
 ];
 
 export default function Dashboard() {
@@ -114,13 +114,11 @@ export default function Dashboard() {
             .then(text => {
                 const rows = parseCSV(text);
                 setAllRows(rows);
-                // default: random row
                 const random = rows[Math.floor(Math.random() * rows.length)];
                 setD(toD(random));
             });
     }, []);
 
-    // unique values for each filter dropdown
     const options = {};
     FILTER_FIELDS.forEach(({ key }) => {
         options[key] = ["", ...new Set(allRows.map(r => r[key]))].filter(Boolean);
@@ -164,9 +162,8 @@ export default function Dashboard() {
                 ))}
             </div>
 
-            {/* rest of your JSX unchanged below */}
             <section>
-                <h3 className="section-label">Агрегатни индикатори</h3>
+                <h3 className="section-label">Aggregated Indicators</h3>
                 <div className="metrics-grid">
                     <MetricCard label="Water Balance" value={scores.waterBalance.toFixed(1)} unit="%" fillPercent={scores.waterBalance} color="#1D9E75" type="gauge" />
                     <MetricCard label="Soil Quality"  value={scores.soilQuality.toFixed(1)}  unit="%" fillPercent={scores.soilQuality}  color="#639922" type="gauge" />
@@ -174,23 +171,23 @@ export default function Dashboard() {
             </section>
 
             <section>
-                <h3 className="section-label">Состојба на почва</h3>
+                <h3 className="section-label">Soil Condition</h3>
                 <div className="metrics-grid">
-                    <MetricCard label="pH вредност"          value={d.soil_pH}                  unit=""       fillPercent={d.soil_pH * 10}                  color="#639922" />
-                    <MetricCard label="Влажност"              value={d.soil_Moisture}             type="gauge"  unit="%"    fillPercent={d.soil_Moisture}           color="#1D9E75" />
-                    <MetricCard label="Температура"           value={d.temperature_C}             unit="°C"     fillPercent={d.temperature_C / 50 * 100}       color="#D85A30" />
-                    <MetricCard label="Органски јаглерод"    value={d.organic_Carbon}            unit="%"      fillPercent={d.organic_Carbon * 20}            color="#888780" />
-                    <MetricCard label="Ел. спроводливост"    value={d.electrical_Conductivity}   unit=" dS/m"  fillPercent={d.electrical_Conductivity * 20}   color="#378ADD" />
+                    <MetricCard label="pH Value"                 value={d.soil_pH}                  unit=""       fillPercent={d.soil_pH * 10}                  color="#639922" />
+                    <MetricCard label="Soil Moisture"            value={d.soil_Moisture}             type="gauge"  unit="%"    fillPercent={d.soil_Moisture}           color="#1D9E75" />
+                    <MetricCard label="Temperature"              value={d.temperature_C}             unit="°C"     fillPercent={d.temperature_C / 50 * 100}       color="#D85A30" />
+                    <MetricCard label="Organic Carbon"           value={d.organic_Carbon}            unit="%"      fillPercent={d.organic_Carbon * 20}            color="#888780" />
+                    <MetricCard label="Electrical Conductivity"  value={d.electrical_Conductivity}   unit=" dS/m"  fillPercent={d.electrical_Conductivity * 20}   color="#378ADD" />
                 </div>
             </section>
 
             <section>
-                <h3 className="section-label">Временски услови</h3>
+                <h3 className="section-label">Weather Conditions</h3>
                 <div className="metrics-grid">
-                    <MetricCard label="Врнежи"               value={d.rainfall_mm}     unit=" mm"    fillPercent={Math.min(100, d.rainfall_mm / 5)}     color="#378ADD" />
-                    <MetricCard label="Влажност на воздух"   value={d.humidity}        unit="%"      fillPercent={d.humidity}                           color="#1D9E75" />
-                    <MetricCard label="Сончеви часови"       value={d.sunlight_Hours}  unit=" h"     fillPercent={d.sunlight_Hours / 12 * 100}          color="#EF9F27" />
-                    <MetricCard label="Брзина на ветер"      value={d.wind_Speed_kmh}  unit=" km/h"  fillPercent={d.wind_Speed_kmh / 50 * 100}          color="#888780" />
+                    <MetricCard label="Rainfall"       value={d.rainfall_mm}     unit=" mm"    fillPercent={Math.min(100, d.rainfall_mm / 5)}     color="#378ADD" />
+                    <MetricCard label="Air Humidity"   value={d.humidity}        unit="%"      fillPercent={d.humidity}                           color="#1D9E75" />
+                    <MetricCard label="Sunlight Hours" value={d.sunlight_Hours}  unit=" h"     fillPercent={d.sunlight_Hours / 12 * 100}          color="#EF9F27" />
+                    <MetricCard label="Wind Speed"     value={d.wind_Speed_kmh}  unit=" km/h"  fillPercent={d.wind_Speed_kmh / 50 * 100}          color="#888780" />
                 </div>
             </section>
 
@@ -199,25 +196,24 @@ export default function Dashboard() {
             </div>
 
             <section>
-                <h3 className="section-label">Култура и парцела</h3>
+                <h3 className="section-label">Crop and Field</h3>
                 <div className="cards-grid">
                     <div className="card">
-                        <h4>Информации за култура</h4>
-                        <div className="row"><span>Вид</span><span>{d.crop_Type}</span></div>
-                        <div className="row"><span>Фаза на раст</span><span>{d.crop_Growth_Stage}</span></div>
-                        <div className="row"><span>Сезона</span><span>{d.season}</span></div>
+                        <h4>Crop Information</h4>
+                        <div className="row"><span>Type</span><span>{d.crop_Type}</span></div>
+                        <div className="row"><span>Growth Stage</span><span>{d.crop_Growth_Stage}</span></div>
+                        <div className="row"><span>Season</span><span>{d.season}</span></div>
                     </div>
                     <div className="card">
-                        <h4>Информации за парцела</h4>
-                        <div className="row"><span>Тип на почва</span><span>{d.soil_Type}</span></div>
-                        <div className="row"><span>Површина</span><span>{d.field_Area_hectare} ha</span></div>
-                        <div className="row"><span>Наводнување</span><span>{d.irrigation_Type}</span></div>
-                        <div className="row"><span>Извор на вода</span><span>{d.water_Source}</span></div>
-                        <div className="row"><span>Малчирање</span><span>{d.mulching_Used}</span></div>
+                        <h4>Field Information</h4>
+                        <div className="row"><span>Soil Type</span><span>{d.soil_Type}</span></div>
+                        <div className="row"><span>Area</span><span>{d.field_Area_hectare} ha</span></div>
+                        <div className="row"><span>Irrigation</span><span>{d.irrigation_Type}</span></div>
+                        <div className="row"><span>Water Source</span><span>{d.water_Source}</span></div>
+                        <div className="row"><span>Mulching</span><span>{d.mulching_Used}</span></div>
                     </div>
                 </div>
             </section>
-
         </div>
     );
 }
