@@ -1,7 +1,6 @@
 package mk.ukim.team38.backend;
 
 import mk.ukim.team38.backend.controller.DataController;
-import mk.ukim.team38.backend.model.User;
 import mk.ukim.team38.backend.repository.UserRepository;
 import mk.ukim.team38.backend.service.ExportService;
 import mk.ukim.team38.backend.service.ImportService;

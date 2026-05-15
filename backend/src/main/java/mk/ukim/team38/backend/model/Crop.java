@@ -1,10 +1,8 @@
 package mk.ukim.team38.backend.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,10 +17,15 @@ public class Crop {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "Crop name is required.")
     private String name;
+
+    @NotBlank(message = "Crop type is required.")
     private String type;
+
     private String plantingDate;
 
     @ManyToOne
+    @JsonIgnoreProperties({"password"})
     private User user;
 }

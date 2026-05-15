@@ -1,23 +1,36 @@
 import { useState } from "react";
 import "./App.css";
-import { NavLink, Routes, Route, useLocation } from "react-router-dom";
+import { NavLink, Routes, Route, useLocation, useNavigate } from "react-router-dom";
 
 import DashboardPage from "./pages/DashboardPage";
 import HomePage from "./pages/HomePage";
-import CropForm from "./pages/CropFormPage.jsx";
+import DataEntryPage from "./pages/DataEntryPage.jsx";
 import Recommendations from "./pages/RecommendationsPage.jsx";
 import ImportExportPage from "./pages/ImportExportPage.jsx";
+import WeatherPage from "./pages/WeatherPage.jsx";
+import AdminPage from "./pages/AdminPage.jsx";
 
 import LoginPage from "./features/auth/pages/LoginPage";
 import RegisterPage from "./features/auth/pages/RegisterPage";
 
+import { clearCurrentUser, getCurrentUser } from "./api";
+
 function LandingPage() {
   const [menuOpen, setMenuOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+  const currentUser = getCurrentUser();
+
   const showHero = location.pathname === "/";
 
   const closeMenu = () => {
     setMenuOpen(false);
+  };
+
+  const handleLogout = () => {
+    clearCurrentUser();
+    closeMenu();
+    navigate("/");
   };
 
   return (
@@ -57,8 +70,8 @@ function LandingPage() {
                 Dashboard
               </NavLink>
 
-              <NavLink to="/cropform" onClick={closeMenu}>
-                Add Crop
+              <NavLink to="/data-entry" onClick={closeMenu}>
+                Data Entry
               </NavLink>
 
               <NavLink to="/recommendations" onClick={closeMenu}>
@@ -68,20 +81,46 @@ function LandingPage() {
               <NavLink to="/import-export" onClick={closeMenu}>
                 Import / Export
               </NavLink>
+
+              <NavLink to="/weather" onClick={closeMenu}>
+                Weather API
+              </NavLink>
+
+              <NavLink to="/admin" onClick={closeMenu}>
+                Admin
+              </NavLink>
             </div>
 
             <div className="navbar-auth">
-              <NavLink to="/auth/login" className="auth-link" onClick={closeMenu}>
-                Login
-              </NavLink>
+              {currentUser ? (
+                  <>
+                    <span className="navbar-user">
+                      {currentUser.fullName}
+                    </span>
 
-              <NavLink
-                  to="/auth/register"
-                  className="auth-button"
-                  onClick={closeMenu}
-              >
-                Register
-              </NavLink>
+                    <button
+                        type="button"
+                        className="logout-button"
+                        onClick={handleLogout}
+                    >
+                      Logout
+                    </button>
+                  </>
+              ) : (
+                  <>
+                    <NavLink to="/auth/login" className="auth-link" onClick={closeMenu}>
+                      Login
+                    </NavLink>
+
+                    <NavLink
+                        to="/auth/register"
+                        className="auth-button"
+                        onClick={closeMenu}
+                    >
+                      Register
+                    </NavLink>
+                  </>
+              )}
             </div>
           </div>
         </nav>
@@ -93,8 +132,8 @@ function LandingPage() {
                 <h2>Intelligent Agriculture System</h2>
                 <p>
                   A web-based platform for managing agricultural data, analyzing soil
-                  and crop conditions, importing/exporting records, and generating
-                  AI-supported irrigation recommendations.
+                  and crop conditions, importing/exporting records, integrating weather
+                  data, and generating AI-supported irrigation recommendations.
                 </p>
 
                 <div className="hero-actions">
@@ -102,8 +141,8 @@ function LandingPage() {
                     View Dashboard
                   </NavLink>
 
-                  <NavLink to="/cropform" className="secondary-action">
-                    Add Crop Data
+                  <NavLink to="/data-entry" className="secondary-action">
+                    Add Agricultural Data
                   </NavLink>
                 </div>
               </div>
@@ -114,14 +153,16 @@ function LandingPage() {
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/dashboard" element={<DashboardPage />} />
-            <Route path="/cropform" element={<CropForm />} />
+            <Route path="/data-entry" element={<DataEntryPage />} />
             <Route path="/recommendations" element={<Recommendations />} />
             <Route path="/import-export" element={<ImportExportPage />} />
+            <Route path="/weather" element={<WeatherPage />} />
+            <Route path="/admin" element={<AdminPage />} />
           </Routes>
         </main>
 
         <footer className="footer">
-          <p>© 2026 – Intelligent Agriculture System</p>
+          <p>© 2026 – Intelligent Agriculture System · Team 38</p>
         </footer>
       </div>
   );
@@ -130,9 +171,9 @@ function LandingPage() {
 function App() {
   return (
       <Routes>
-        <Route path="/*" element={<LandingPage />} />
         <Route path="/auth/login" element={<LoginPage />} />
         <Route path="/auth/register" element={<RegisterPage />} />
+        <Route path="/*" element={<LandingPage />} />
       </Routes>
   );
 }

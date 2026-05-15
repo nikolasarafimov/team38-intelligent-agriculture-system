@@ -7,5 +7,15 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface CropRepository extends JpaRepository<Crop, Long> {
+
     List<Crop> findByUser(User user);
+
+    List<Crop> findByNameContainingIgnoreCaseOrTypeContainingIgnoreCase(String name, String type);
+
+    List<Crop> findByUserAndNameContainingIgnoreCaseOrUserAndTypeContainingIgnoreCase(
+            User user1,
+            String name,
+            User user2,
+            String type
+    );
 }

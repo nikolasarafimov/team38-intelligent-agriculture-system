@@ -129,3 +129,33 @@
     padding: 1.2rem;
   }
 }
+
+.auth-message {
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+.auth-message.success {
+  background: #dcfce7;
+  color: #166534;
+  border: 1px solid #86efac;
+}
+
+.auth-message.error {
+  background: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+}
+
+.auth-message.info {
+  background: #e0f2fe;
+  color: #075985;
+  border: 1px solid #bae6fd;
+}
+
+.auth-form button:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}

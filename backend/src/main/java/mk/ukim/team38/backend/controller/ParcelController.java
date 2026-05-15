@@ -1,5 +1,6 @@
 package mk.ukim.team38.backend.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import mk.ukim.team38.backend.model.Parcel;
 import mk.ukim.team38.backend.service.ParcelService;
@@ -16,8 +17,11 @@ public class ParcelController {
     private final ParcelService parcelService;
 
     @GetMapping
-    public List<Parcel> getAllParcels() {
-        return parcelService.findAll();
+    public List<Parcel> getAllParcels(
+            @RequestParam(required = false) Long userId,
+            @RequestParam(required = false) String search
+    ) {
+        return parcelService.findAll(userId, search);
     }
 
     @GetMapping("/{id}")
@@ -28,12 +32,12 @@ public class ParcelController {
     }
 
     @PostMapping
-    public Parcel createParcel(@RequestBody Parcel parcel) {
+    public Parcel createParcel(@Valid @RequestBody Parcel parcel) {
         return parcelService.save(parcel);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Parcel> updateParcel(@PathVariable Long id, @RequestBody Parcel parcelDetails) {
+    public ResponseEntity<Parcel> updateParcel(@PathVariable Long id, @Valid @RequestBody Parcel parcelDetails) {
         try {
             return ResponseEntity.ok(parcelService.update(id, parcelDetails));
         } catch (RuntimeException e) {

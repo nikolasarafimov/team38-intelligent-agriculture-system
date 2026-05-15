@@ -1,209 +1,212 @@
 import { useState } from "react";
-import { API_BASE_URL, DEMO_USER_ID } from "../api";
+import { API_BASE_URL } from "../api";
 
-const importOptions = [
-    { value: "crops", label: "Crops CSV" },
-    { value: "parcels", label: "Parcels CSV" },
-    { value: "activities", label: "Activities CSV" },
-    { value: "excel", label: "All Data Excel" },
+const EXPORT_OPTIONS = [
+    {
+        key: "crops",
+        label: "Export Crops CSV",
+        endpoint: "/api/data/export/crops",
+        filename: "crops.csv",
+    },
+    {
+        key: "parcels",
+        label: "Export Parcels CSV",
+        endpoint: "/api/data/export/parcels",
+        filename: "parcels.csv",
+    },
+    {
+        key: "activities",
+        label: "Export Activities CSV",
+        endpoint: "/api/data/export/activities",
+        filename: "activities.csv",
+    },
+    {
+        key: "excel",
+        label: "Export Complete Excel Workbook",
+        endpoint: "/api/data/export/excel",
+        filename: "agriculture-data.xlsx",
+    },
 ];
 
-const exportOptions = [
+const IMPORT_OPTIONS = [
     {
-        endpoint: "crops",
-        filename: "crops.csv",
-        title: "Export Crops",
-        description: "Download crop records as a CSV file.",
+        key: "crops",
+        label: "Import Crops CSV",
+        endpoint: "/api/data/import/crops",
+        accept: ".csv",
     },
     {
-        endpoint: "parcels",
-        filename: "parcels.csv",
-        title: "Export Parcels",
-        description: "Download parcel records as a CSV file.",
+        key: "parcels",
+        label: "Import Parcels CSV",
+        endpoint: "/api/data/import/parcels",
+        accept: ".csv",
     },
     {
-        endpoint: "activities",
-        filename: "activities.csv",
-        title: "Export Activities",
-        description: "Download activity records as a CSV file.",
+        key: "activities",
+        label: "Import Activities CSV",
+        endpoint: "/api/data/import/activities",
+        accept: ".csv",
     },
     {
-        endpoint: "excel",
-        filename: "agriculture_data.xlsx",
-        title: "Export Excel",
-        description: "Download all available data as one Excel workbook.",
+        key: "excel",
+        label: "Import Excel Workbook",
+        endpoint: "/api/data/import/excel",
+        accept: ".xlsx,.xls",
     },
 ];
 
 export default function ImportExportPage() {
-    const [selectedFile, setSelectedFile] = useState(null);
-    const [importType, setImportType] = useState("crops");
-    const [result, setResult] = useState(null);
-    const [message, setMessage] = useState("");
-    const [loading, setLoading] = useState(false);
+    const [status, setStatus] = useState({
+        message: "",
+        type: "",
+    });
 
-    const handleFileChange = (event) => {
-        setSelectedFile(event.target.files[0]);
-        setResult(null);
-        setMessage("");
-    };
-
-    const handleImport = async () => {
-        if (!selectedFile) {
-            setMessage("Please select a CSV or Excel file before importing.");
-            return;
-        }
-
-        setLoading(true);
-        setResult(null);
-        setMessage("");
-
-        const formData = new FormData();
-        formData.append("file", selectedFile);
+    const downloadFile = async (option) => {
+        setStatus({
+            message: `Preparing ${option.label.toLowerCase()}...`,
+            type: "info",
+        });
 
         try {
-            const response = await fetch(
-                `${API_BASE_URL}/api/data/import/${importType}?userId=${DEMO_USER_ID}`,
-                {
-                    method: "POST",
-                    body: formData,
-                }
-            );
+            const response = await fetch(`${API_BASE_URL}${option.endpoint}`);
 
             if (!response.ok) {
-                throw new Error("Import failed");
-            }
-
-            const data = await response.json();
-            setResult(data);
-            setMessage("Import completed.");
-        } catch (error) {
-            console.error(error);
-            setMessage("Import failed. Make sure the backend is running and the file format is valid.");
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const handleExport = async (endpoint, filename) => {
-        setMessage("");
-
-        try {
-            const response = await fetch(
-                `${API_BASE_URL}/api/data/export/${endpoint}?userId=${DEMO_USER_ID}`
-            );
-
-            if (!response.ok) {
-                throw new Error("Export failed");
+                throw new Error("Export failed.");
             }
 
             const blob = await response.blob();
             const url = window.URL.createObjectURL(blob);
-            const anchor = document.createElement("a");
 
-            anchor.href = url;
-            anchor.download = filename;
-            document.body.appendChild(anchor);
-            anchor.click();
-            anchor.remove();
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = option.filename;
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
 
             window.URL.revokeObjectURL(url);
-            setMessage(`${filename} exported successfully.`);
+
+            setStatus({
+                message: `${option.label} completed successfully.`,
+                type: "success",
+            });
         } catch (error) {
-            console.error(error);
-            setMessage("Export failed. Make sure the backend is running and user ID 1 exists.");
+            setStatus({
+                message:
+                    error.message ||
+                    "Export failed. Make sure the backend is running.",
+                type: "error",
+            });
+        }
+    };
+
+    const uploadFile = async (option, file) => {
+        if (!file) {
+            setStatus({
+                message: "Please select a file first.",
+                type: "error",
+            });
+            return;
+        }
+
+        setStatus({
+            message: `Uploading ${file.name}...`,
+            type: "info",
+        });
+
+        const formData = new FormData();
+        formData.append("file", file);
+
+        try {
+            const response = await fetch(`${API_BASE_URL}${option.endpoint}`, {
+                method: "POST",
+                body: formData,
+            });
+
+            if (!response.ok) {
+                const errorMessage = await response.text();
+                throw new Error(errorMessage || "Import failed.");
+            }
+
+            const message = await response.text();
+
+            setStatus({
+                message: message || `${option.label} completed successfully.`,
+                type: "success",
+            });
+        } catch (error) {
+            setStatus({
+                message:
+                    error.message ||
+                    "Import failed. Make sure the file format is correct.",
+                type: "error",
+            });
         }
     };
 
     return (
-        <div className="import-export-page">
-            <section className="card">
-                <h2>Import & Export Data</h2>
+        <main className="page-shell">
+            <section className="page-header-card">
+                <span className="section-label">Import / Export</span>
+                <h1>Data Import and Export</h1>
                 <p>
-                    This module allows users to export agricultural records to CSV or Excel and
-                    import existing datasets into the system. It demonstrates file handling,
-                    backend endpoints and database persistence.
+                    This module supports exporting agricultural records to CSV or Excel
+                    and importing datasets back into the system. It satisfies the project
+                    requirement for file-based data exchange.
                 </p>
             </section>
 
-            <section className="export-grid">
-                {exportOptions.map((option) => (
-                    <article className="export-card" key={option.endpoint}>
-                        <h3>{option.title}</h3>
-                        <p>{option.description}</p>
-                        <button
-                            type="button"
-                            onClick={() => handleExport(option.endpoint, option.filename)}
-                        >
-                            Download
-                        </button>
-                    </article>
-                ))}
-            </section>
-
-            <section className="import-panel">
-                <div>
-                    <h3>Import Data</h3>
+            <section className="import-export-grid">
+                <article className="import-export-card">
+                    <h2>Export Data</h2>
                     <p>
-                        Select the import type, choose a file and upload it to the backend service.
+                        Download crops, parcels, activities, or a complete Excel workbook
+                        containing project data.
                     </p>
-                </div>
 
-                <div className="import-controls">
-                    <div className="form-field">
-                        <label htmlFor="importType">Import type</label>
-                        <select
-                            id="importType"
-                            value={importType}
-                            onChange={(event) => setImportType(event.target.value)}
-                        >
-                            {importOptions.map((option) => (
-                                <option value={option.value} key={option.value}>
-                                    {option.label}
-                                </option>
-                            ))}
-                        </select>
+                    <div className="action-list">
+                        {EXPORT_OPTIONS.map((option) => (
+                            <button
+                                key={option.key}
+                                type="button"
+                                className="submit-button"
+                                onClick={() => downloadFile(option)}
+                            >
+                                {option.label}
+                            </button>
+                        ))}
                     </div>
+                </article>
 
-                    <div className="form-field">
-                        <label htmlFor="file">File</label>
-                        <input
-                            id="file"
-                            type="file"
-                            accept=".csv,.xlsx"
-                            onChange={handleFileChange}
-                        />
+                <article className="import-export-card">
+                    <h2>Import Data</h2>
+                    <p>
+                        Upload CSV files for individual modules or an Excel workbook for
+                        structured data import.
+                    </p>
+
+                    <div className="action-list">
+                        {IMPORT_OPTIONS.map((option) => (
+                            <label key={option.key} className="file-upload-row">
+                                <span>{option.label}</span>
+                                <input
+                                    type="file"
+                                    accept={option.accept}
+                                    onChange={(event) =>
+                                        uploadFile(option, event.target.files[0])
+                                    }
+                                />
+                            </label>
+                        ))}
                     </div>
-
-                    <button className="submit-button" type="button" onClick={handleImport} disabled={loading}>
-                        {loading ? "Importing..." : "Import File"}
-                    </button>
-                </div>
-
-                {message && <div className="form-message info">{message}</div>}
-
-                {result && (
-                    <div className="import-result">
-                        <p>
-                            Imported: <strong>{result.imported}</strong>
-                        </p>
-                        <p>
-                            Skipped: <strong>{result.skipped}</strong>
-                        </p>
-
-                        {result.errors?.length > 0 && (
-                            <div>
-                                <p>Errors:</p>
-                                <ul>
-                                    {result.errors.map((error, index) => (
-                                        <li key={index}>{error}</li>
-                                    ))}
-                                </ul>
-                            </div>
-                        )}
-                    </div>
-                )}
+                </article>
             </section>
-        </div>
+
+            {status.message && (
+                <div className={`form-alert ${status.type}`}>
+                    {status.message}
+                </div>
+            )}
+        </main>
     );
 }

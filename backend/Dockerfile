@@ -1,8 +1,10 @@
-FROM gradle:8.5-jdk21 AS build
+FROM gradle:8.7-jdk21 AS build
 
 WORKDIR /app
 
 COPY build.gradle settings.gradle ./
+COPY gradle ./gradle
+COPY gradlew ./
 COPY src ./src
 
 RUN gradle clean bootJar --no-daemon

@@ -2,7 +2,9 @@ package mk.ukim.team38.backend.service;
 
 import lombok.RequiredArgsConstructor;
 import mk.ukim.team38.backend.model.Crop;
+import mk.ukim.team38.backend.model.User;
 import mk.ukim.team38.backend.repository.CropRepository;
+import mk.ukim.team38.backend.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,8 +15,28 @@ import java.util.Optional;
 public class CropService {
 
     private final CropRepository cropRepository;
+    private final UserRepository userRepository;
 
-    public List<Crop> findAll() {
+    public List<Crop> findAll(Long userId, String search) {
+        User user = getUserOrNull(userId);
+
+        if (search != null && !search.isBlank()) {
+            if (user != null) {
+                return cropRepository.findByUserAndNameContainingIgnoreCaseOrUserAndTypeContainingIgnoreCase(
+                        user,
+                        search,
+                        user,
+                        search
+                );
+            }
+
+            return cropRepository.findByNameContainingIgnoreCaseOrTypeContainingIgnoreCase(search, search);
+        }
+
+        if (user != null) {
+            return cropRepository.findByUser(user);
+        }
+
         return cropRepository.findAll();
     }
 
@@ -34,10 +56,23 @@ public class CropService {
         crop.setType(cropDetails.getType());
         crop.setPlantingDate(cropDetails.getPlantingDate());
 
+        if (cropDetails.getUser() != null) {
+            crop.setUser(cropDetails.getUser());
+        }
+
         return cropRepository.save(crop);
     }
 
     public void deleteById(Long id) {
         cropRepository.deleteById(id);
+    }
+
+    private User getUserOrNull(Long userId) {
+        if (userId == null) {
+            return null;
+        }
+
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
     }
 }

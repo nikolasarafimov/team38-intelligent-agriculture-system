@@ -1,26 +1,33 @@
-.idea/
-*.iml
-
-backend/.gradle/
-backend/build/
-backend/out/
-*.class
-
-frontend/node_modules/
-frontend/dist/
-frontend/.vite/
-
-ml/.venv/
-ml/__pycache__/
-ml/app/__pycache__/
-*.pyc
-*.pyo
-*.pyd
-
-.env
-.env.local
-*.log
-
-# OS files
+# General
 .DS_Store
 Thumbs.db
+*.log
+
+# IntelliJ / IDE
+.idea/
+*.iml
+.vscode/
+
+# Backend / Gradle
+backend/build/
+backend/.gradle/
+.gradle/
+
+# Frontend / Node
+frontend/node_modules/
+frontend/dist/
+node_modules/
+dist/
+
+# ML / Python
+ml/.venv/
+ml/venv/
+ml/__pycache__/
+ml/**/*.pyc
+
+# Environment files
+.env
+*.env
+
+# OS generated
+desktop.ini

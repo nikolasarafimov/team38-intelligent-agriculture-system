@@ -1,24 +1,13 @@
 import { useEffect, useState } from "react";
 import { apiRequest, getCurrentUser } from "../api";
-import "./DashboardPage.css";
 
-function StatCard({ title, value, description }) {
-    return (
-        <article className="dashboard-stat-card">
-            <p>{title}</p>
-            <strong>{value}</strong>
-            <span>{description}</span>
-        </article>
-    );
-}
-
-function DataTable({ title, columns, rows, emptyMessage }) {
+function AdminTable({ title, rows, columns, onDelete }) {
     return (
         <section className="dashboard-table-card">
             <h3>{title}</h3>
 
             {rows.length === 0 ? (
-                <p className="empty-table-message">{emptyMessage}</p>
+                <p className="empty-table-message">No records found.</p>
             ) : (
                 <div className="responsive-table">
                     <table>
@@ -27,6 +16,7 @@ function DataTable({ title, columns, rows, emptyMessage }) {
                             {columns.map((column) => (
                                 <th key={column.key}>{column.label}</th>
                             ))}
+                            <th>Action</th>
                         </tr>
                         </thead>
 
@@ -40,6 +30,16 @@ function DataTable({ title, columns, rows, emptyMessage }) {
                                             : row[column.key] || "-"}
                                     </td>
                                 ))}
+
+                                <td>
+                                    <button
+                                        className="admin-delete-button"
+                                        type="button"
+                                        onClick={() => onDelete(row.id)}
+                                    >
+                                        Delete
+                                    </button>
+                                </td>
                             </tr>
                         ))}
                         </tbody>
@@ -50,55 +50,44 @@ function DataTable({ title, columns, rows, emptyMessage }) {
     );
 }
 
-export default function DashboardPage() {
+export default function AdminPage() {
     const currentUser = getCurrentUser();
 
-    const [stats, setStats] = useState({
-        usersCount: 0,
-        cropsCount: 0,
-        parcelsCount: 0,
-        activitiesCount: 0,
-    });
-
-    const [search, setSearch] = useState("");
+    const [users, setUsers] = useState([]);
     const [crops, setCrops] = useState([]);
     const [parcels, setParcels] = useState([]);
     const [activities, setActivities] = useState([]);
 
     const [status, setStatus] = useState({
         loading: true,
-        message: "Loading dashboard data...",
+        message: "Loading admin data...",
         type: "info",
     });
 
-    const loadDashboard = async (searchValue = "") => {
+    const loadAdminData = async () => {
         setStatus({
             loading: true,
-            message: "Loading dashboard data...",
+            message: "Loading admin data...",
             type: "info",
         });
 
         try {
-            const query = searchValue.trim()
-                ? `?search=${encodeURIComponent(searchValue.trim())}`
-                : "";
-
-            const [statsData, cropsData, parcelsData, activitiesData] =
+            const [usersData, cropsData, parcelsData, activitiesData] =
                 await Promise.all([
-                    apiRequest("/api/dashboard/stats"),
-                    apiRequest(`/api/crops${query}`),
-                    apiRequest(`/api/parcels${query}`),
-                    apiRequest(`/api/activities${query}`),
+                    apiRequest("/api/admin/users"),
+                    apiRequest("/api/admin/crops"),
+                    apiRequest("/api/admin/parcels"),
+                    apiRequest("/api/admin/activities"),
                 ]);
 
-            setStats(statsData);
+            setUsers(usersData);
             setCrops(cropsData);
             setParcels(parcelsData);
             setActivities(activitiesData);
 
             setStatus({
                 loading: false,
-                message: "Dashboard data loaded successfully.",
+                message: "Admin data loaded successfully.",
                 type: "success",
             });
         } catch (error) {
@@ -106,92 +95,63 @@ export default function DashboardPage() {
                 loading: false,
                 message:
                     error.message ||
-                    "Could not load dashboard data. Make sure the backend is running.",
+                    "Could not load admin data. Make sure the backend is running.",
                 type: "error",
             });
         }
     };
 
     useEffect(() => {
-        loadDashboard();
+        loadAdminData();
     }, []);
 
-    const handleSearchSubmit = (event) => {
-        event.preventDefault();
-        loadDashboard(search);
-    };
+    const deleteRecord = async (resource, id) => {
+        const confirmed = window.confirm(
+            `Are you sure you want to delete this ${resource} record?`
+        );
 
-    const clearSearch = () => {
-        setSearch("");
-        loadDashboard("");
+        if (!confirmed) {
+            return;
+        }
+
+        try {
+            await apiRequest(`/api/admin/${resource}/${id}`, {
+                method: "DELETE",
+            });
+
+            setStatus({
+                loading: false,
+                message: "Record deleted successfully.",
+                type: "success",
+            });
+
+            loadAdminData();
+        } catch (error) {
+            setStatus({
+                loading: false,
+                message: error.message || "Could not delete record.",
+                type: "error",
+            });
+        }
     };
 
     return (
         <main className="dashboard-page">
             <section className="dashboard-hero">
-                <span className="section-label">Project Dashboard</span>
-                <h1>Intelligent Agriculture Overview</h1>
+                <span className="section-label">Administrative Functionalities</span>
+                <h1>Admin Panel</h1>
                 <p>
-                    This dashboard displays real backend statistics and allows search
-                    across crops, parcels and agricultural activities.
+                    This page demonstrates administrative access to users and system
+                    data. It allows reviewing users, crops, parcels and agricultural
+                    activities, with basic delete actions for intervention.
                 </p>
 
                 {currentUser && (
                     <div className="current-user-box">
-                        Logged in as <strong>{currentUser.fullName}</strong> ·{" "}
-                        {currentUser.email} · Role: {currentUser.role}
+                        Current user: <strong>{currentUser.fullName}</strong> · Role:{" "}
+                        {currentUser.role}
                     </div>
                 )}
-            </section>
-
-            <section className="dashboard-stats-grid">
-                <StatCard
-                    title="Users"
-                    value={stats.usersCount}
-                    description="Registered users in the system"
-                />
-
-                <StatCard
-                    title="Crops"
-                    value={stats.cropsCount}
-                    description="Saved agricultural crop records"
-                />
-
-                <StatCard
-                    title="Parcels"
-                    value={stats.parcelsCount}
-                    description="Registered land parcel records"
-                />
-
-                <StatCard
-                    title="Activities"
-                    value={stats.activitiesCount}
-                    description="Agricultural activity records"
-                />
-            </section>
-
-            <section className="dashboard-search-card">
-                <form onSubmit={handleSearchSubmit}>
-                    <label htmlFor="dashboard-search">
-                        Search and filter agricultural data
-                    </label>
-
-                    <div className="dashboard-search-row">
-                        <input
-                            id="dashboard-search"
-                            type="text"
-                            placeholder="Search by crop, type, location, soil, activity..."
-                            value={search}
-                            onChange={(event) => setSearch(event.target.value)}
-                        />
-
-                        <button type="submit">Search</button>
-
-                        <button type="button" className="secondary-dashboard-button" onClick={clearSearch}>
-                            Clear
-                        </button>
-                    </div>
-                </form>
             </section>
 
             {status.message && (
@@ -201,10 +161,22 @@ export default function DashboardPage() {
             )}
 
             <section className="dashboard-data-grid">
-                <DataTable
+                <AdminTable
+                    title="Users"
+                    rows={users}
+                    onDelete={(id) => deleteRecord("users", id)}
+                    columns={[
+                        { key: "id", label: "ID" },
+                        { key: "fullName", label: "Full Name" },
+                        { key: "email", label: "Email" },
+                        { key: "role", label: "Role" },
+                    ]}
+                />
+
+                <AdminTable
                     title="Crops"
                     rows={crops}
-                    emptyMessage="No crops found."
+                    onDelete={(id) => deleteRecord("crops", id)}
                     columns={[
                         { key: "id", label: "ID" },
                         { key: "name", label: "Name" },
@@ -218,10 +190,10 @@ export default function DashboardPage() {
                     ]}
                 />
 
-                <DataTable
+                <AdminTable
                     title="Parcels"
                     rows={parcels}
-                    emptyMessage="No parcels found."
+                    onDelete={(id) => deleteRecord("parcels", id)}
                     columns={[
                         { key: "id", label: "ID" },
                         { key: "location", label: "Location" },
@@ -235,10 +207,10 @@ export default function DashboardPage() {
                     ]}
                 />
 
-                <DataTable
+                <AdminTable
                     title="Activities"
                     rows={activities}
-                    emptyMessage="No activities found."
+                    onDelete={(id) => deleteRecord("activities", id)}
                     columns={[
                         { key: "id", label: "ID" },
                         { key: "description", label: "Description" },

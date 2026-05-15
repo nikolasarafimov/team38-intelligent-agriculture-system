@@ -1,5 +1,6 @@
 package mk.ukim.team38.backend.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import mk.ukim.team38.backend.model.Crop;
 import mk.ukim.team38.backend.service.CropService;
@@ -16,8 +17,11 @@ public class CropController {
     private final CropService cropService;
 
     @GetMapping
-    public List<Crop> getAllCrops() {
-        return cropService.findAll();
+    public List<Crop> getAllCrops(
+            @RequestParam(required = false) Long userId,
+            @RequestParam(required = false) String search
+    ) {
+        return cropService.findAll(userId, search);
     }
 
     @GetMapping("/{id}")
@@ -28,12 +32,12 @@ public class CropController {
     }
 
     @PostMapping
-    public Crop createCrop(@RequestBody Crop crop) {
+    public Crop createCrop(@Valid @RequestBody Crop crop) {
         return cropService.save(crop);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Crop> updateCrop(@PathVariable Long id, @RequestBody Crop cropDetails) {
+    public ResponseEntity<Crop> updateCrop(@PathVariable Long id, @Valid @RequestBody Crop cropDetails) {
         try {
             return ResponseEntity.ok(cropService.update(id, cropDetails));
         } catch (RuntimeException e) {
