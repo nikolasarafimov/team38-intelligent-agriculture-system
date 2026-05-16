@@ -59,12 +59,18 @@ export default function AdminPage() {
     const [activities, setActivities] = useState([]);
 
     const [status, setStatus] = useState({
-        loading: true,
-        message: "Loading admin data...",
-        type: "info",
+        loading: false,
+        message: "",
+        type: "",
     });
 
+    const isAdmin = currentUser?.role === "ADMIN";
+
     const loadAdminData = async () => {
+        if (!isAdmin) {
+            return;
+        }
+
         setStatus({
             loading: true,
             message: "Loading admin data...",
@@ -85,11 +91,6 @@ export default function AdminPage() {
             setParcels(parcelsData);
             setActivities(activitiesData);
 
-            setStatus({
-                loading: false,
-                message: "Admin data loaded successfully.",
-                type: "success",
-            });
         } catch (error) {
             setStatus({
                 loading: false,
@@ -102,8 +103,46 @@ export default function AdminPage() {
     };
 
     useEffect(() => {
-        loadAdminData();
-    }, []);
+        if (!isAdmin) {
+            return;
+        }
+
+        let ignore = false;
+
+        Promise.all([
+            apiRequest("/api/admin/users"),
+            apiRequest("/api/admin/crops"),
+            apiRequest("/api/admin/parcels"),
+            apiRequest("/api/admin/activities"),
+        ])
+            .then(([usersData, cropsData, parcelsData, activitiesData]) => {
+                if (ignore) {
+                    return;
+                }
+
+                setUsers(usersData);
+                setCrops(cropsData);
+                setParcels(parcelsData);
+                setActivities(activitiesData);
+            })
+            .catch((error) => {
+                if (ignore) {
+                    return;
+                }
+
+                setStatus({
+                    loading: false,
+                    message:
+                        error.message ||
+                        "Could not load admin data. Make sure the backend is running.",
+                    type: "error",
+                });
+            });
+
+        return () => {
+            ignore = true;
+        };
+    }, [isAdmin]);
 
     const deleteRecord = async (resource, id) => {
         const confirmed = window.confirm(
@@ -135,6 +174,33 @@ export default function AdminPage() {
         }
     };
 
+    if (!currentUser) {
+        return (
+            <main className="dashboard-page">
+                <section className="dashboard-hero">
+                    <span className="section-label">Access Restricted</span>
+                    <h1>Admin Panel</h1>
+                    <p>You must be logged in to access the administrative panel.</p>
+                </section>
+            </main>
+        );
+    }
+
+    if (!isAdmin) {
+        return (
+            <main className="dashboard-page">
+                <section className="dashboard-hero">
+                    <span className="section-label">Access Denied</span>
+                    <h1>Admin Panel</h1>
+                    <p>
+                        This page is available only for users with the ADMIN role.
+                        Your current role is <strong>{currentUser.role}</strong>.
+                    </p>
+                </section>
+            </main>
+        );
+    }
+
     return (
         <main className="dashboard-page">
             <section className="dashboard-hero">
@@ -146,12 +212,10 @@ export default function AdminPage() {
                     activities, with basic delete actions for intervention.
                 </p>
 
-                {currentUser && (
-                    <div className="current-user-box">
-                        Current user: <strong>{currentUser.fullName}</strong> · Role:{" "}
-                        {currentUser.role}
-                    </div>
-                )}
+                <div className="current-user-box">
+                    Current user: <strong>{currentUser.fullName}</strong> · Role:{" "}
+                    {currentUser.role}
+                </div>
             </section>
 
             {status.message && (

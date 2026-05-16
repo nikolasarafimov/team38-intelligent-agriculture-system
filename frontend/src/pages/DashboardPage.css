@@ -217,3 +217,99 @@
         padding: 24px;
     }
 }
+
+.table-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.edit-row-button,
+.delete-row-button {
+    border: none;
+    border-radius: 999px;
+    padding: 0.5rem 0.8rem;
+    font-weight: 900;
+    cursor: pointer;
+    transition: 0.18s ease;
+}
+
+.edit-row-button {
+    background: #dbeafe;
+    color: #1d4ed8;
+}
+
+.edit-row-button:hover {
+    background: #bfdbfe;
+    transform: translateY(-1px);
+}
+
+.delete-row-button {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.delete-row-button:hover {
+    background: #fecaca;
+    transform: translateY(-1px);
+}
+
+.edit-data-card {
+    background: #ffffff;
+    border: 1px solid rgba(21, 128, 61, 0.16);
+    border-radius: 22px;
+    padding: 1.5rem;
+    box-shadow: 0 16px 38px rgba(22, 101, 52, 0.08);
+}
+
+.edit-data-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1.2rem;
+}
+
+.edit-data-header h2 {
+    margin: 0.3rem 0 0;
+    color: #064e3b;
+    font-size: 1.5rem;
+}
+
+.edit-data-form {
+    display: grid;
+    gap: 1rem;
+}
+
+.edit-data-form .form-field {
+    display: grid;
+    gap: 0.45rem;
+}
+
+.edit-data-form label {
+    color: #064e3b;
+    font-weight: 900;
+}
+
+.edit-data-form input {
+    border: 1px solid rgba(15, 118, 110, 0.24);
+    border-radius: 16px;
+    padding: 0.9rem 1rem;
+    background: #f8fafc;
+    color: #0f172a;
+}
+
+.edit-data-form input:focus {
+    outline: 3px solid rgba(31, 122, 77, 0.16);
+    border-color: #15803d;
+}
+
+.edit-data-form .submit-button {
+    border: none;
+    border-radius: 999px;
+    padding: 0.9rem 1.2rem;
+    color: #ffffff;
+    background: linear-gradient(135deg, #15803d, #166534);
+    font-weight: 900;
+    cursor: pointer;
+}

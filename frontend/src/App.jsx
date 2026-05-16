@@ -9,6 +9,7 @@ import Recommendations from "./pages/RecommendationsPage.jsx";
 import ImportExportPage from "./pages/ImportExportPage.jsx";
 import WeatherPage from "./pages/WeatherPage.jsx";
 import AdminPage from "./pages/AdminPage.jsx";
+import ProfilePage from "./pages/ProfilePage.jsx";
 
 import LoginPage from "./features/auth/pages/LoginPage";
 import RegisterPage from "./features/auth/pages/RegisterPage";
@@ -17,6 +18,8 @@ import { clearCurrentUser, getCurrentUser } from "./api";
 
 function LandingPage() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
+
   const location = useLocation();
   const navigate = useNavigate();
   const currentUser = getCurrentUser();
@@ -25,6 +28,7 @@ function LandingPage() {
 
   const closeMenu = () => {
     setMenuOpen(false);
+    setUserMenuOpen(false);
   };
 
   const handleLogout = () => {
@@ -42,6 +46,7 @@ function LandingPage() {
                 alt="AgriSense AI logo"
                 className="brand-logo"
             />
+
             <div>
               <h1>AgriSense AI</h1>
               <p>Intelligent Agriculture System</p>
@@ -85,27 +90,38 @@ function LandingPage() {
               <NavLink to="/weather" onClick={closeMenu}>
                 Weather API
               </NavLink>
-
-              <NavLink to="/admin" onClick={closeMenu}>
-                Admin
-              </NavLink>
             </div>
 
             <div className="navbar-auth">
               {currentUser ? (
-                  <>
-                    <span className="navbar-user">
-                      {currentUser.fullName}
-                    </span>
-
+                  <div className="user-dropdown">
                     <button
                         type="button"
-                        className="logout-button"
-                        onClick={handleLogout}
+                        className="user-dropdown-toggle"
+                        onClick={() => setUserMenuOpen((previous) => !previous)}
                     >
-                      Logout
+                      <span>{currentUser.fullName}</span>
+                      <span className="dropdown-arrow">▾</span>
                     </button>
-                  </>
+
+                    {userMenuOpen && (
+                        <div className="user-dropdown-menu">
+                          <NavLink to="/profile" onClick={closeMenu}>
+                            Profile
+                          </NavLink>
+
+                          {currentUser.role === "ADMIN" && (
+                              <NavLink to="/admin" onClick={closeMenu}>
+                                Admin Panel
+                              </NavLink>
+                          )}
+
+                          <button type="button" onClick={handleLogout}>
+                            Logout
+                          </button>
+                        </div>
+                    )}
+                  </div>
               ) : (
                   <>
                     <NavLink to="/auth/login" className="auth-link" onClick={closeMenu}>
@@ -129,7 +145,9 @@ function LandingPage() {
             <header className="hero-section">
               <div className="hero-content">
                 <span className="hero-badge">AI in Agriculture · Team 38</span>
+
                 <h2>Intelligent Agriculture System</h2>
+
                 <p>
                   A web-based platform for managing agricultural data, analyzing soil
                   and crop conditions, importing/exporting records, integrating weather
@@ -157,6 +175,7 @@ function LandingPage() {
             <Route path="/recommendations" element={<Recommendations />} />
             <Route path="/import-export" element={<ImportExportPage />} />
             <Route path="/weather" element={<WeatherPage />} />
+            <Route path="/profile" element={<ProfilePage />} />
             <Route path="/admin" element={<AdminPage />} />
           </Routes>
         </main>

@@ -48,12 +48,6 @@ export default function WeatherPage() {
             );
 
             setWeatherData(data);
-
-            setStatus({
-                loading: false,
-                message: "Weather data loaded successfully.",
-                type: "success",
-            });
         } catch (error) {
             setStatus({
                 loading: false,
