@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { API_BASE_URL } from "../api";
+import { API_BASE_URL, getCurrentUserId } from "../api";
 
 const EXPORT_OPTIONS = [
     {
@@ -56,10 +56,16 @@ const IMPORT_OPTIONS = [
 ];
 
 export default function ImportExportPage() {
+    const activeUserId = getCurrentUserId();
+
     const [status, setStatus] = useState({
         message: "",
         type: "",
     });
+
+    const buildUrlWithUserId = (endpoint) => {
+        return `${API_BASE_URL}${endpoint}?userId=${activeUserId}`;
+    };
 
     const downloadFile = async (option) => {
         setStatus({
@@ -68,10 +74,11 @@ export default function ImportExportPage() {
         });
 
         try {
-            const response = await fetch(`${API_BASE_URL}${option.endpoint}`);
+            const response = await fetch(buildUrlWithUserId(option.endpoint));
 
             if (!response.ok) {
-                throw new Error("Export failed.");
+                const errorText = await response.text();
+                throw new Error(errorText || "Export failed.");
             }
 
             const blob = await response.blob();
@@ -118,17 +125,26 @@ export default function ImportExportPage() {
         formData.append("file", file);
 
         try {
-            const response = await fetch(`${API_BASE_URL}${option.endpoint}`, {
+            const response = await fetch(buildUrlWithUserId(option.endpoint), {
                 method: "POST",
                 body: formData,
             });
 
             if (!response.ok) {
-                const errorMessage = await response.text();
-                throw new Error(errorMessage || "Import failed.");
+                const errorText = await response.text();
+                throw new Error(errorText || "Import failed.");
             }
 
-            const message = await response.text();
+            const contentType = response.headers.get("content-type");
+
+            let message;
+
+            if (contentType && contentType.includes("application/json")) {
+                const data = await response.json();
+                message = JSON.stringify(data, null, 2);
+            } else {
+                message = await response.text();
+            }
 
             setStatus({
                 message: message || `${option.label} completed successfully.`,
@@ -151,9 +167,13 @@ export default function ImportExportPage() {
                 <h1>Data Import and Export</h1>
                 <p>
                     This module supports exporting agricultural records to CSV or Excel
-                    and importing datasets back into the system. It satisfies the project
-                    requirement for file-based data exchange.
+                    and importing datasets back into the system. All operations are
+                    connected to the active user.
                 </p>
+
+                <div className="current-user-box">
+                    Active user ID for import/export: <strong>{activeUserId}</strong>
+                </div>
             </section>
 
             <section className="import-export-grid">
@@ -204,7 +224,7 @@ export default function ImportExportPage() {
 
             {status.message && (
                 <div className={`form-alert ${status.type}`}>
-                    {status.message}
+                    <pre className="status-pre">{status.message}</pre>
                 </div>
             )}
         </main>
