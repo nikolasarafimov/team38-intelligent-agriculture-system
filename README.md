@@ -2,7 +2,7 @@
 
 Team 38 project for the course **ICT Project Management**.
 
-The **Intelligent Agriculture System** is a web-based prototype for managing agricultural data, integrating external weather data, supporting CSV/Excel import-export, and generating AI-supported agricultural recommendations. The project combines a Spring Boot backend, React frontend, PostgreSQL database, Docker Compose setup, and a separate FastAPI machine learning service.
+The **Intelligent Agriculture System**, also presented as **AgriSense AI**, is a web-based academic prototype for managing agricultural data, integrating external weather data, supporting CSV/Excel import-export, and generating AI-supported agricultural recommendations. The project combines a Spring Boot backend, React frontend, PostgreSQL database, Docker Compose setup, and a separate FastAPI machine learning service.
 
 ---
 
@@ -10,7 +10,7 @@ The **Intelligent Agriculture System** is a web-based prototype for managing agr
 
 The purpose of this project is to support better agricultural decision-making through a digital platform that collects, stores, analyzes, and presents agricultural data in a structured way.
 
-The system allows users to manage information about crops, parcels, and agricultural activities. It also includes import/export functionality for CSV and Excel files, dashboard statistics, external weather API integration, and a machine learning module for generating agricultural recommendations.
+The system allows users to manage information about crops, parcels, and agricultural activities. It also includes dashboard statistics, search and filtering, external weather API integration, CSV/Excel import-export functionality, and a machine learning module for generating irrigation-related agricultural recommendations.
 
 The project is developed as a working academic prototype and demonstrates how different system components can work together in an intelligent agriculture environment.
 
@@ -30,18 +30,20 @@ Selected topic:
 
 - User registration and login
 - User logout
+- User profile viewing and editing
 - Crop data management
 - Parcel data management
 - Agricultural activity tracking
+- View, edit and delete agricultural records
 - PostgreSQL database storage
-- CSV import and export
-- Excel import and export
 - Dashboard statistics
 - Search and filtering of agricultural data
 - External weather API integration
-- AI-supported recommendation interface
+- AI-supported irrigation recommendation interface
 - FastAPI machine learning service
-- Basic administrative panel
+- CSV import and export
+- Excel import and export
+- Basic administrative panel with frontend role-based access check
 - React frontend with navigation and multiple pages
 - Spring Boot REST API backend
 - Docker Compose setup for easier project startup
@@ -59,7 +61,20 @@ Database     PostgreSQL database
 ML Service   FastAPI service for agricultural recommendations
 ```
 
-The frontend communicates with the backend through REST API calls. The backend stores and retrieves agricultural data from the PostgreSQL database. The backend can also communicate with the FastAPI machine learning service to generate AI-supported recommendations. The weather functionality demonstrates integration with an external API.
+The frontend communicates with the backend through REST API calls. The backend stores and retrieves agricultural data from the PostgreSQL database. The backend also communicates with the FastAPI machine learning service to generate AI-supported recommendations. The weather functionality demonstrates integration with an external weather API.
+
+```text
+React Frontend
+      |
+      v
+Spring Boot Backend
+      |
+      +--> PostgreSQL Database
+      |
+      +--> External Weather API
+      |
+      +--> FastAPI ML Service
+```
 
 ---
 
@@ -94,6 +109,7 @@ team38-intelligent-agriculture-system/
 - Spring Web
 - Spring Data JPA
 - Bean Validation
+- Spring Security Crypto
 - PostgreSQL Driver
 - Gradle
 - Apache POI
@@ -147,7 +163,11 @@ Parcel
 Activity
 ```
 
-Important backend endpoints:
+---
+
+## Important Backend Endpoints
+
+### Users
 
 ```http
 POST   /api/users/register
@@ -158,7 +178,11 @@ GET    /api/users/{id}
 POST   /api/users
 PUT    /api/users/{id}
 DELETE /api/users/{id}
+```
 
+### Crops
+
+```http
 GET    /api/crops
 GET    /api/crops?search=tomato
 GET    /api/crops?userId=1
@@ -167,7 +191,11 @@ GET    /api/crops/{id}
 POST   /api/crops
 PUT    /api/crops/{id}
 DELETE /api/crops/{id}
+```
 
+### Parcels
+
+```http
 GET    /api/parcels
 GET    /api/parcels?search=loamy
 GET    /api/parcels?userId=1
@@ -176,7 +204,11 @@ GET    /api/parcels/{id}
 POST   /api/parcels
 PUT    /api/parcels/{id}
 DELETE /api/parcels/{id}
+```
 
+### Activities
+
+```http
 GET    /api/activities
 GET    /api/activities?search=irrigation
 GET    /api/activities?userId=1
@@ -185,13 +217,29 @@ GET    /api/activities/{id}
 POST   /api/activities
 PUT    /api/activities/{id}
 DELETE /api/activities/{id}
+```
 
-GET    /api/dashboard/stats
+### Dashboard
 
-GET    /api/weather?latitude=41.9981&longitude=21.4254
+```http
+GET /api/dashboard/stats
+```
 
-POST   /api/recommendations
+### Weather API
 
+```http
+GET /api/weather?latitude=41.9981&longitude=21.4254
+```
+
+### AI Recommendations
+
+```http
+POST /api/recommendations
+```
+
+### Admin
+
+```http
 GET    /api/admin/users
 GET    /api/admin/crops
 GET    /api/admin/parcels
@@ -200,15 +248,22 @@ DELETE /api/admin/users/{id}
 DELETE /api/admin/crops/{id}
 DELETE /api/admin/parcels/{id}
 DELETE /api/admin/activities/{id}
+```
 
-GET    /api/data/export/crops
-POST   /api/data/import/crops
-GET    /api/data/export/parcels
-POST   /api/data/import/parcels
-GET    /api/data/export/activities
-POST   /api/data/import/activities
-GET    /api/data/export/excel
-POST   /api/data/import/excel
+### Import / Export
+
+```http
+GET  /api/data/export/crops?userId=1
+POST /api/data/import/crops?userId=1
+
+GET  /api/data/export/parcels?userId=1
+POST /api/data/import/parcels?userId=1
+
+GET  /api/data/export/activities?userId=1
+POST /api/data/import/activities?userId=1
+
+GET  /api/data/export/excel?userId=1
+POST /api/data/import/excel?userId=1
 ```
 
 Swagger UI is available at:
@@ -229,6 +284,7 @@ Main frontend pages:
 Home
 Dashboard
 Data Entry
+Profile
 Recommendations
 Import / Export
 Weather API
@@ -237,7 +293,7 @@ Login
 Register
 ```
 
-The frontend includes forms for entering agricultural data, pages for importing and exporting files, dashboard statistics, search/filter functionality, weather API data display, and a recommendation page that communicates with the backend.
+The frontend includes forms for entering agricultural data, pages for importing and exporting files, dashboard statistics, search/filter functionality, edit/delete actions for agricultural records, weather API data display, and a recommendation page that communicates with the backend and the ML service.
 
 Frontend URL:
 
@@ -249,7 +305,7 @@ http://localhost:5173
 
 ## Machine Learning Module Overview
 
-The machine learning module is implemented as a separate FastAPI service. It exposes an endpoint for generating predictions or recommendations based on agricultural and environmental input data.
+The machine learning module is implemented as a separate FastAPI service. It exposes an endpoint for generating predictions or recommendations based on agricultural, soil, weather and field-related input data.
 
 Important ML endpoints:
 
@@ -466,6 +522,17 @@ Parcels
 Activities
 ```
 
+Import/export operations are connected to the active user through the `userId` request parameter.
+
+Example endpoints:
+
+```http
+GET  /api/data/export/crops?userId=1
+POST /api/data/import/crops?userId=1
+GET  /api/data/export/excel?userId=1
+POST /api/data/import/excel?userId=1
+```
+
 CSV import examples:
 
 ### Crops CSV
@@ -492,14 +559,14 @@ Ohrid,600,Sandy
 description,date,type
 Morning irrigation,2026-05-15,Irrigation
 Soil fertilization,2026-05-16,Fertilization
-Pest inspection,2026-05-17,Protection
+Pest inspection,2026-05-17,Crop Protection
 ```
 
 ---
 
 ## Recommendation Request Example
 
-The backend recommendation endpoint accepts agricultural and environmental input and forwards it to the ML service when available.
+The backend recommendation endpoint accepts agricultural, soil, weather and field-related input and forwards it to the FastAPI ML service when available.
 
 Endpoint:
 
@@ -511,11 +578,25 @@ Example request body:
 
 ```json
 {
-  "cropType": "Tomato",
-  "soilType": "Loamy",
-  "temperature": 28,
-  "humidity": 55,
-  "rainfall": 8
+  "Soil_pH": 6.8,
+  "Soil_Moisture": 32,
+  "Organic_Carbon": 1.7,
+  "Electrical_Conductivity": 0.8,
+  "Temperature_C": 32,
+  "Humidity": 35,
+  "Rainfall_mm": 2,
+  "Sunlight_Hours": 8,
+  "Wind_Speed_kmh": 12,
+  "Field_Area_hectare": 1.5,
+  "Previous_Irrigation_mm": 5,
+  "Soil_Type": "Loamy",
+  "Crop_Type": "Tomato",
+  "Crop_Growth_Stage": "Vegetative",
+  "Season": "Summer",
+  "Irrigation_Type": "Drip",
+  "Water_Source": "Canal",
+  "Mulching_Used": "Yes",
+  "Region": "Skopje"
 }
 ```
 
@@ -523,11 +604,19 @@ Example response:
 
 ```json
 {
-  "recommendation": "Irrigation is recommended because temperature is high.",
-  "source": "ML service or backend fallback",
+  "recommendation": "High irrigation need detected. The field should be irrigated soon because the model predicts high water requirement.",
+  "predictionLabel": "High",
+  "probabilities": {
+    "High": 0.85,
+    "Medium": 0.12,
+    "Low": 0.03
+  },
+  "source": "FastAPI ML service",
   "mlServiceAvailable": true
 }
 ```
+
+The exact prediction label and probabilities depend on the ML model output.
 
 ---
 
@@ -550,6 +639,39 @@ Longitude: 21.4254
 
 These coordinates represent Skopje.
 
+The displayed weather data includes values such as:
+
+```text
+Temperature
+Humidity
+Precipitation
+Wind Speed
+```
+
+---
+
+## User Roles and Admin Panel
+
+The system supports basic user roles:
+
+```text
+USER
+ADMIN
+```
+
+Registered users are created as `USER` by default. The admin panel is shown only to users with the `ADMIN` role on the frontend.
+
+The admin panel allows reviewing and deleting:
+
+```text
+Users
+Crops
+Parcels
+Activities
+```
+
+The admin access check is implemented at frontend prototype level. Full backend-level role enforcement with JWT/Spring Security can be added as a future improvement.
+
 ---
 
 ## Demonstration Flow
@@ -557,16 +679,25 @@ These coordinates represent Skopje.
 Recommended demonstration order:
 
 1. Open the home page.
-2. Register a new user.
-3. Log in with the created user.
-4. Add crop, parcel, and activity data.
-5. Open the dashboard and show statistics.
-6. Use the search/filter functionality.
-7. Open the Weather API page and fetch weather data.
-8. Open the Recommendations page and generate an AI-supported recommendation.
-9. Export data as CSV or Excel.
-10. Import sample CSV or Excel data.
-11. Open the Admin page and show system records.
+2. Register or log in as a demo user.
+3. Open the dashboard and show statistics.
+4. Show search/filter functionality.
+5. Open the Data Entry page and show crop, parcel and activity forms.
+6. Open the Weather API page and fetch weather data.
+7. Open the Recommendations page and generate an AI-supported recommendation.
+8. Open the Import / Export page and export CSV or Excel data.
+9. Optionally show the Profile page.
+10. Optionally show the Admin page as an ADMIN user.
+
+For a short product video, the recommended focus is:
+
+```text
+Home
+Dashboard
+Weather API
+AI Recommendations
+Import / Export
+```
 
 ---
 
@@ -575,16 +706,19 @@ Recommended demonstration order:
 The project was developed through multiple weekly phases:
 
 - Initial team organization and topic selection
+- Project specification preparation
 - Jira and GitHub setup
 - Backend and frontend structure setup
 - Database schema development
 - Login/register UI development
 - CRUD functionality implementation
+- Dashboard and search/filter development
 - ML module research and model service preparation
 - Weather API research and integration
 - Import/export implementation
+- Docker Compose integration
 - Final system integration and testing
-- Final presentation preparation
+- Final presentation and video preparation
 
 ---
 
@@ -599,14 +733,16 @@ Spring Boot backend
 React frontend
 PostgreSQL database connection
 User registration and login
+User profile editing
 Crop, parcel and activity management
+View, edit and delete agricultural records
 CSV and Excel import/export
 Dashboard statistics
 Search and filtering
 Weather API integration
-Recommendation interface
+AI/ML recommendation interface
 FastAPI ML prediction service
-Basic admin panel
+Basic admin panel with frontend role check
 Docker Compose configuration
 ```
 
@@ -619,15 +755,17 @@ Some parts are implemented at prototype level and can be extended in future vers
 Possible improvements include:
 
 - Full JWT-based authentication and authorization
-- Role-based access control for admin functionality
+- Role-based access control enforced at backend level
+- Spring Security protection for admin endpoints
 - More advanced backend validation
 - More detailed integration between weather data and recommendations
-- Stronger integration between backend and ML service
+- Expanded AI recommendations for crop protection and activity selection
 - More detailed analytics dashboard
 - Expanded automated testing
 - Production deployment configuration
 - Improved error handling and logging
 - Improved UI feedback and loading states
+- Mobile-first responsive optimization
 
 ---
 
@@ -652,7 +790,7 @@ Possible improvements include:
 
 ## Project Status
 
-The project is prepared as a final working prototype for demonstration. It includes the main system components, organized project structure, Docker Compose setup, and documentation for running and testing the application.
+The project is prepared as a final working academic prototype for demonstration. It includes the main system components, organized project structure, Docker Compose setup, and documentation for running and testing the application.
 
 ```text
 Status: Final academic prototype
